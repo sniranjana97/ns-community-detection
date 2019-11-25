@@ -21,7 +21,7 @@ def total_conformity(G, communities):
             for edge in G.edges(node, data=True):
                 u, v, data = edge
                 if v in community:
-                    ind_conf += data['positive']
+                    ind_conf += data['positive'] - data['negative']
             group_conf += ind_conf/total_actions
     return group_conf
 
@@ -31,12 +31,12 @@ def peer_conformity(G, node1, node2):
   for edge in G.edges(node1, data=True):
     u, v, data = edge
     if node2==v:
-      peer_conf1 = data['positive']/data['total']
+      peer_conf1 = (data['positive']-data['negative'])/data['total']
       break
   for edge in G.edges(node2, data=True):
     u, v, data = edge
     if node1==v:
-      peer_conf2 = data['positive']/data['total']
+      peer_conf2 = (data['positive']-data['negative'])/data['total']
       break
   return max(peer_conf1, peer_conf2)
 
@@ -56,16 +56,10 @@ def greedy_modularity_communities(G, weight=None):
     communities = dict((i, frozenset([i])) for i in range(N))
     merges = []
 
-    # # Initial conformity
+    # Initial conformity
     partition = [[num_to_id_map[x] for x in c] for c in communities.values()]
     q_cnm = total_conformity(G, partition)
 
-    # Initialize data structures
-    # CNM Eq 8-9 (Eq 8 was missing a factor of 2 (from A_ij + A_ji)
-    # a[i]: fraction of edges within community i
-    # dq_dict[i][j]: dQ for merging community i, j
-    # dq_heap[i][n] : (-dq, i, j) for communitiy i nth largest dQ
-    # H[n]: (-dq, i, j) for community with nth largest max_j(dQ_ij)
 
     dq_dict = dict(
         (i, dict(
@@ -75,8 +69,6 @@ def greedy_modularity_communities(G, weight=None):
                 for u in G.neighbors(num_to_id_map[i])]
             if j != i))
         for i in range(N))
-    # print("DQ dictionary")
-    # print(dq_dict)
 
     dq_heap = [
         MappedQueue([
@@ -84,17 +76,11 @@ def greedy_modularity_communities(G, weight=None):
             for j, dq in dq_dict[i].items()])
         for i in range(N)]
 
-    # print("DQ Heap")
-    # print(dq_heap)
 
     H = MappedQueue([
         dq_heap[i].h[0]
         for i in range(N)
         if len(dq_heap[i]) > 0])
-
-    # for i in range(N):
-    #   if len(dq_heap[i]) > 0:
-    #     print(dq_heap[i].h[0])
 
 
     # Merge communities until we can't improve modularity
@@ -281,9 +267,12 @@ def clustering():
     G = nx.read_edgelist('./edges.txt', create_using=nx.DiGraph, nodetype=int, data=True)
 
     c = list(greedy_modularity_communities(G))
+
+    largest_community = G.subgraph(c[0])
+    nx.write_edgelist(largest_community,'largest_community.edgelist',data=False)
     print("Number of nodes: "+ str(nx.number_of_nodes(G)))
     print("Number of edges: "+ str(nx.number_of_edges(G)))
-    print(len(c))
+    print(len(c[0]))
 
 if __name__ == "__main__":
     clustering()
