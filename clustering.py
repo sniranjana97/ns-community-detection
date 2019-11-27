@@ -1,5 +1,6 @@
 import networkx as nx
 import urllib
+import csv
 
 from networkx.algorithms.community.quality import modularity
 from networkx.utils.mapped_queue import MappedQueue

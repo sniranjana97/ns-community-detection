@@ -13,4 +13,10 @@ create_edge_list.py
 
 clustering.py
 
-   Community detection algorithm.
+   Community detection algorithm that writes the communities to c_communities.csv
+
+Test.py
+   
+   Community detection algorithm that writes the communities of sub graph to the subgraph_comm.csv
+
+
