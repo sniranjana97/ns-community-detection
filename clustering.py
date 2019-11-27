@@ -1,5 +1,6 @@
 import networkx as nx
 import urllib
+import csv
 
 from networkx.algorithms.community.quality import modularity
 from networkx.utils.mapped_queue import MappedQueue
@@ -268,6 +269,10 @@ def clustering():
 
     c = list(greedy_modularity_communities(G))
 
+    with open('c_communities.csv', 'w') as writeFile:
+        writer = csv.writer(writeFile)
+        writer.writerow(c)
+        writeFile.close()
     largest_community = G.subgraph(c[0])
     nx.write_edgelist(largest_community,'largest_community.edgelist',data=False)
     print("Number of nodes: "+ str(nx.number_of_nodes(G)))
