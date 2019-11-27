@@ -76,7 +76,7 @@ def create_edge_list():
         for p1, value in interactions.items():
             for p2,interaction in value.items():
                 #Total number of actions is calculated as total tweets plus total retweets
-                values = {'positive': interaction.positive, 'negative': interaction.negative, 'total': total[p2]}
+                values = {'positive': interaction.positive, 'negative': interaction.negative, 'total': interaction.positive+interaction.negative}
                 f.write(p2 + " " + p1 + " " + str(values) +"\n")
 
 

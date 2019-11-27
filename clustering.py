@@ -21,7 +21,7 @@ def total_conformity(G, communities):
             for edge in G.edges(node, data=True):
                 u, v, data = edge
                 if v in community:
-                    ind_conf += data['positive'] - data['negative']
+                    ind_conf += data['positive']
             group_conf += ind_conf/total_actions
     return group_conf
 
@@ -31,12 +31,12 @@ def peer_conformity(G, node1, node2):
   for edge in G.edges(node1, data=True):
     u, v, data = edge
     if node2==v:
-      peer_conf1 = (data['positive']-data['negative'])/data['total']
+      peer_conf1 = (data['positive'])/data['total']
       break
   for edge in G.edges(node2, data=True):
     u, v, data = edge
     if node1==v:
-      peer_conf2 = (data['positive']-data['negative'])/data['total']
+      peer_conf2 = (data['positive'])/data['total']
       break
   return max(peer_conf1, peer_conf2)
 
@@ -267,9 +267,7 @@ def clustering():
     G = nx.read_edgelist('./edges.txt', create_using=nx.DiGraph, nodetype=int, data=True)
 
     c = list(greedy_modularity_communities(G))
-
-    largest_community = G.subgraph(c[0])
-    nx.write_edgelist(largest_community,'largest_community.edgelist',data=False)
+    print("Number of communities:" + str(len(c)))
     print("Number of nodes: "+ str(nx.number_of_nodes(G)))
     print("Number of edges: "+ str(nx.number_of_edges(G)))
     print(len(c[0]))
